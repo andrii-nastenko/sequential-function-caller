@@ -28,13 +28,13 @@
  * // Display the array of results or errors from the calls.
  * console.log(result);
  */
-export declare function repeatCalls({ functionToExecute, totalCalls, chunkSize, delaySeconds, payloadArray }: {
-    functionToExecute: (...payload: any[]) => Promise<unknown> | unknown;
+export declare function repeatCalls<T, R>({ functionToExecute, totalCalls, chunkSize, delaySeconds, payloadArray }: {
+    functionToExecute: (...payload: T[]) => Promise<R> | R;
     totalCalls?: number;
     chunkSize: number;
     delaySeconds: number;
-    payloadArray?: any[];
-}): Promise<any>;
+    payloadArray?: T[];
+}): Promise<R[]>;
 declare const _default: {
     repeatCalls: typeof repeatCalls;
 };

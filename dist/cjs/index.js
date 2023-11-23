@@ -50,18 +50,17 @@ function repeatCalls({ functionToExecute, totalCalls, chunkSize, delaySeconds, p
             const chunkStart = i;
             const chunkEnd = Math.min(i + chunkSize, defaultTotalCalls);
             const chunk = hasPayload
-                ? payloadArray === null || payloadArray === void 0 ? void 0 : payloadArray.slice(chunkStart, chunkEnd) : Array.from({ length: chunkEnd - chunkStart }, (_, j) => j + chunkStart);
-            for (const args of chunk !== null && chunk !== void 0 ? chunk : []) {
-                const result = Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch((error) => error);
-                results.push(result);
-                yield result;
-            }
-            allResults.push(...results);
+                ? payloadArray === null || payloadArray === void 0 ? void 0 : payloadArray.slice(chunkStart, chunkEnd)
+                : Array.from({ length: chunkEnd - chunkStart }, (_, j) => j + chunkStart);
+            const chunkPromises = (chunk !== null && chunk !== void 0 ? chunk : []).map((args) => Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch((error) => Promise.reject(error)));
+            const chunkResults = yield Promise.all(chunkPromises);
+            results.push(...chunkResults);
             if (i + chunkSize < defaultTotalCalls && delaySeconds > 0) {
                 yield new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
             }
+            allResults.push(...results);
         }
-        return yield Promise.all(allResults);
+        return allResults;
     });
 }
 exports.repeatCalls = repeatCalls;

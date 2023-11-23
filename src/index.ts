@@ -28,48 +28,49 @@
  * // Display the array of results or errors from the calls.
  * console.log(result);
  */
-export async function repeatCalls({
+export async function repeatCalls<T, R>({
   functionToExecute,
   totalCalls,
   chunkSize,
   delaySeconds,
   payloadArray
 }: {
-  functionToExecute: (...payload: any[]) => Promise<unknown> | unknown;
+  functionToExecute: (...payload: T[]) => Promise<R> | R;
   totalCalls?: number;
   chunkSize: number;
   delaySeconds: number;
-  payloadArray?: any[];
-}): Promise<any> {
+  payloadArray?: T[];
+}): Promise<R[]> {
   const hasPayload = Array.isArray(payloadArray);
   const defaultTotalCalls = totalCalls ?? ((hasPayload ? payloadArray?.length : 0) || 0);
-  const allResults: Array<Promise<unknown>> = [];
+  const allResults: R[] = [];
 
   for (let i = 0; i < defaultTotalCalls; i += chunkSize) {
-    const results: Array<Promise<unknown>> = [];
+    const results: R[] = [];
     const chunkStart = i;
     const chunkEnd = Math.min(i + chunkSize, defaultTotalCalls);
 
     const chunk = hasPayload
-      ? payloadArray?.slice(chunkStart, chunkEnd) // Use optional chaining here
+      ? payloadArray?.slice(chunkStart, chunkEnd)
       : Array.from({length: chunkEnd - chunkStart}, (_, j) => j + chunkStart);
 
-    for (const args of chunk ?? []) {
-      const result = Promise.resolve(
-        functionToExecute(...(Array.isArray(args) ? args : [args]))
-      ).catch((error) => error);
-      results.push(result);
-      await result;
-    }
+    const chunkPromises = (chunk ?? []).map((args) =>
+      Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch(
+        (error: Error) => Promise.reject(error)
+      )
+    );
 
-    allResults.push(...results);
+    const chunkResults = await Promise.all(chunkPromises);
+    results.push(...chunkResults);
 
     if (i + chunkSize < defaultTotalCalls && delaySeconds > 0) {
       await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
     }
+
+    allResults.push(...results);
   }
 
-  return await Promise.all(allResults);
+  return allResults;
 }
 
 export default {repeatCalls};

@@ -56,7 +56,7 @@ export async function repeatCalls<T, R>({
 
     const chunkPromises = (chunk ?? []).map((args) =>
       Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch(
-        (error: Error) => Promise.reject(error)
+        (error: R) => error
       )
     );
 

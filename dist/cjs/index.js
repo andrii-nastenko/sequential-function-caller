@@ -52,7 +52,7 @@ function repeatCalls({ functionToExecute, totalCalls, chunkSize, delaySeconds, p
             const chunk = hasPayload
                 ? payloadArray === null || payloadArray === void 0 ? void 0 : payloadArray.slice(chunkStart, chunkEnd)
                 : Array.from({ length: chunkEnd - chunkStart }, (_, j) => j + chunkStart);
-            const chunkPromises = (chunk !== null && chunk !== void 0 ? chunk : []).map((args) => Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch((error) => Promise.reject(error)));
+            const chunkPromises = (chunk !== null && chunk !== void 0 ? chunk : []).map((args) => Promise.resolve(functionToExecute(...(Array.isArray(args) ? args : [args]))).catch((error) => error));
             const chunkResults = yield Promise.all(chunkPromises);
             results.push(...chunkResults);
             if (i + chunkSize < defaultTotalCalls && delaySeconds > 0) {

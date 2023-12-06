@@ -14,9 +14,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
  * @template R - The type of the result returned by the function.
  * @param {Object} options - The options object.
  * @param {number} options.chunkSize - The size of each chunk.
- * @param {number} options.totalCalls - The total number of calls to be made.
- * @param {T[]} [options.payloadArray=[]] - The array of payloads to be passed to the function.
  * @param {number} options.delaySeconds - The delay in seconds between chunks.
+ * @param {T[]} [options.payloadArray=[]] - The array of payloads to be passed to the function. Either `payloadArray` or `totalCalls` is required.
+ * @param {number} [options.totalCalls] - The total number of calls to be made. Either `payloadArray` or `totalCalls` is required.
+ * @param {(...payload: T[]) => Promise<R> | R} options.functionToExecute - The function to be executed.
  * @returns {Promise<R[]>} - A promise that resolves to an array of results.
  *
  * @example

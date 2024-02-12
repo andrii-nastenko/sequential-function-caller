@@ -18,14 +18,17 @@ You can import the `repeatCalls` function in two ways, depending on your prefere
 ```typescript
 import { repeatCalls } from 'sequential-function-caller';
 
-const exampleFunction = (a) => { console.log(a); return a; };
+const exampleFunction = (a) => { 
+    console.log(a); 
+    return a; 
+};
 
 repeatCalls({
     functionToExecute: exampleFunction,
     totalCalls: 9,
     chunkSize: 3,
     payloadArray: [1,2,3,4,5,6,7,8,9],
-    delaySeconds: 1
+    delayMs: 1000
 }).then(response => {
     console.log(response);
 });

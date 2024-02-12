@@ -1,6 +1,6 @@
 {
   "name": "sequential-function-caller",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Andrii Nastenko",
   "description": "Package for calling a function multiple times, dividing the calls into chunks and executing them sequentially.",
   "files": [

@@ -5,7 +5,7 @@
  * @template R - The type of the result returned by the function.
  * @param {Object} options - The options object.
  * @param {number} options.chunkSize - The size of each chunk.
- * @param {number} options.delaySeconds - The delay in seconds between chunks.
+ * @param {number} options.delayMs - The delay in milliseconds between chunks.
  * @param {T[]} [options.payloadArray=[]] - The array of payloads to be passed to the function. Either `payloadArray` or `totalCalls` is required.
  * @param {number} [options.totalCalls] - The total number of calls to be made. Either `payloadArray` or `totalCalls` is required.
  * @param {(...payload: T[]) => Promise<R> | R} options.functionToExecute - The function to be executed.
@@ -13,7 +13,10 @@
  *
  * @example
  * // Define a function (could be sync or async) to be executed in chunks.
- * const exampleFunction = (a) => { console.log(a); return a };
+ * const exampleFunction = (a) => {
+ *     console.log(a);
+ *     return a
+ * };
  *
  * // Execute the function in chunks.
  * repeatCalls({
@@ -21,7 +24,7 @@
  *     totalCalls: 9,
  *     chunkSize: 3,
  *     payloadArray: [1,2,3,4,5,6,7,8,9],
- *     delaySeconds: 1
+ *     delayMs: 1000
  * }).then(response => {
  *     console.log(response);
  * });
@@ -33,12 +36,12 @@ export async function repeatCalls<T, R>({
   functionToExecute,
   totalCalls,
   chunkSize,
-  delaySeconds,
+  delayMs,
   payloadArray
 }: {
   functionToExecute: (...payload: T[]) => Promise<R> | R;
   chunkSize: number;
-  delaySeconds: number;
+  delayMs: number;
   payloadArray: T[];
   totalCalls: number;
 }): Promise<R[]> {
@@ -64,8 +67,8 @@ export async function repeatCalls<T, R>({
     const chunkResults = await Promise.all(chunkPromises);
     results.push(...chunkResults);
 
-    if (i + chunkSize < defaultTotalCalls && delaySeconds > 0) {
-      await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+    if (i + chunkSize < defaultTotalCalls && delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
 
     allResults.push(...results);
